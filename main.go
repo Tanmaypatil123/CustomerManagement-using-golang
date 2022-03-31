@@ -69,6 +69,19 @@ func GetCustomer() []Customer{
 	return customers
 }
 
+func InsertCustomer(customer Customer){
+	var database *sql.DB
+	database = GetConnection()
+	var error error
+	var insert *sql.Stmt
+	insert , error = database.Prepare("INSERT INTO Customer (CustomerName , ssn) VALUES (?,?)")
+	if error != nil{
+		panic(error.Error())
+	}
+	insert.Exec(customer.CustomerName,customer.SSN)
+	defer database.Close()
+}
+
 func main() {
 	var customers []Customer
 	customers = GetCustomer()
