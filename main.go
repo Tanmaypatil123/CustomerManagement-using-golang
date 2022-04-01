@@ -82,8 +82,58 @@ func InsertCustomer(customer Customer){
 	defer database.Close()
 }
 
+func UpdateCustomer(customer Customer){
+	var database *sql.DB
+	database = GetConnection()
+	var error error
+	var update *sql.Stmt
+	update , error = database.Prepare("UPDATE CUSTOMER SET CustomerName=?,SSN=? WHERE Customerid=?")
+	if error != nil {
+		panic(error.Error())
+	}
+	update.Exec(customer.CustomerName,customer.SSN,customer.CustomerId)
+	defer database.Close()
+}
+func deleteCustomer(customer Customer){
+	var database *sql.DB
+	database = GetConnection()
+	var error error
+	var delete *sql.Stmt
+	delete,error = database.Prepare("DELETE FROM Customer WHERE Customerid=?")
+	if error != nil {
+		panic(error.Error())
+	}
+	delete.Exec(customer.CustomerId)
+	defer database.Close()
+}
+
 func main() {
 	var customers []Customer
 	customers = GetCustomer()
-	fmt.Println("Customers",customers)
+	fmt.Println("Before inert",customers)
+	var customer Customer
+	customer.CustomerName = "Will Smith"
+	customer.SSN = "2386343"
+	InsertCustomer(customer)
+	customers = GetCustomer()
+	fmt.Println("After Insert",customers)
+	// Update
+
+	fmt.Println("Before Update",customers)
+	customer.CustomerName = "MS dhoni"
+	customer.SSN = "23233432"
+	customer.CustomerId = 3
+	UpdateCustomer(customer)
+	customers = GetCustomer()
+	fmt.Println("After update",customers)
+
+	//DELETE
+
+	fmt.Println("Before Delete",customers)
+	customer.CustomerName = "Will Smith"
+	customer.SSN = "2386343"
+	customer.CustomerId = 4
+	deleteCustomer(customer)
+	customers = GetCustomer()
+	fmt.Println("After Delete",customers)
 }
